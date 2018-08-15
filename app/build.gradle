@@ -1,0 +1,81 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "com.sample.common"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "boolean", "OPEN_STRICT_MODE", "true"
+    }
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "OPEN_STRICT_MODE", "true"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            buildConfigField "boolean", "OPEN_STRICT_MODE", "false"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "debug") {
+            variant.mergedFlavor.versionName = "debug_v0.${versionCode}"
+        } else {
+            variant.mergedFlavor.versionName = "${versionName}"
+        }
+        variant.outputs.all {
+            outputFileName = "${variant.versionName}.apk"
+        }
+    }
+
+    greendao {
+        schemaVersion 1
+        targetGenDir 'src/main/java'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //log
+    implementation 'com.orhanobut:logger:2.2.0'
+    //json
+    implementation 'com.alibaba:fastjson:1.1.70.android'
+    //rx_preference
+    implementation 'com.f2prateek.rx.preferences2:rx-preferences:2.0.0'
+    //http
+    implementation 'com.lzy.net:okgo:3.0.4'//必须使用
+    implementation 'com.lzy.net:okrx2:2.0.2'//rx2
+    implementation 'com.lzy.net:okserver:2.0.5'//下载
+    //permission
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    //leakCanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+    //Butter Knife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //greenDao
+    implementation 'org.greenrobot:greendao:3.2.0'
+    //升级数据库的依赖，以前有的字段继承，新增的字段为null
+    implementation 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.1.0'
+    //this way you only enable BlockCanary in debug package
+    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
+    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+}
